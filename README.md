@@ -14,17 +14,6 @@ DSH（DeepSeek Harness）**临时会话**插件：基于**当前主对话上下�
 - **三种回答引擎**：复用 DSH 全局 Key（按供应商感知）/ 插件自带 Key / 走宿主 `ctx.llm.stream`。
 - 主界面同款 UI（`--dsw-alias-*` 设计令牌，深浅主题自动跟随）。
 
-## 相对上游 0.3.0 的改动
-
-| 问题 | 上游 0.3.0 | 本版 |
-| --- | --- | --- |
-| 客户端启动 | `inject` 声明 `settingsScope`（EAC 分叉内核专有服务），官方内核无此服务 → 客户端 entry 永久 pending，web boot 抛 `1 entry did not activate`，桌面端起不来 | `inject` 为 `["slots", "commandUi"]`；配置回落到内存默认值 |
-| 上下文卡空态 | 读 `sessions.list` 快照的 `current` 字段，官方 `SessionListState` 只有 `ids/byId/phase/projectionsBySession` → 恒为空，显示「未检测到会话」 | 三级解析：`uiSession.adapter.current` → 快照 `current` → `byId` 中 `retainedBy.mainView > 0` 者（按 `updatedAt` 取最新） |
-| 会话日志识别 | 只认 `session.jsonl.zstd` | 兼容 `session.jsonl.zstd` 与 `session.vN.jsonl.zstd` |
-| 工具事件与文件统计 | 只认 `tool/code-dispatch*`、只取 `args.file_path` | 兼容 `tool/ptc-dispatch*`；路径取 `file_path/filePath/path`、`files[].path`、`*path`；工具名覆盖 `ops_read_files/ops_inspect_local_file/ops_write_file/ops_edit_file/ops_grep/ops_glob` |
-| 依赖 | `import` 裸 `schemastery` | `@deepseek-ai/schemastery`（必须与宿主同一个 Schema 类；`dependencies` 置空，复用 profile 顶层 hoisted 的那份） |
-| 会话文件定位 | 每次全树扫描 | 直探 `<sessions>/<工作区>/<sessionId>/`，未命中再全树扫描；空结果不写缓存 |
-
 ## 安装
 
 从 git 安装（`dsh` 版本需自带 `@deepseek-ai/schemastery`，官方 profile 顶层已 hoisted）：
@@ -67,6 +56,17 @@ SPEC.md             # 功能规格
 - 路由仅限回环（`isLoopback`）；API Key 走 settings secret role。
 - 大文件注入前先 `stat`，二进制跳过、超大文件只读前 N KB。
 - 「浮窗」为页内可拖拽自由浮层（`position:fixed`），非独立 OS 窗口。
+
+## 相对上游 0.3.0 的改动
+
+| 问题 | 上游 0.3.0 | 本版 |
+| --- | --- | --- |
+| 客户端启动 | `inject` 声明 `settingsScope`（EAC 分叉内核专有服务），官方内核无此服务 → 客户端 entry 永久 pending，web boot 抛 `1 entry did not activate`，桌面端起不来 | `inject` 为 `["slots", "commandUi"]`；配置回落到内存默认值 |
+| 上下文卡空态 | 读 `sessions.list` 快照的 `current` 字段，官方 `SessionListState` 只有 `ids/byId/phase/projectionsBySession` → 恒为空，显示「未检测到会话」 | 三级解析：`uiSession.adapter.current` → 快照 `current` → `byId` 中 `retainedBy.mainView > 0` 者（按 `updatedAt` 取最新） |
+| 会话日志识别 | 只认 `session.jsonl.zstd` | 兼容 `session.jsonl.zstd` 与 `session.vN.jsonl.zstd` |
+| 工具事件与文件统计 | 只认 `tool/code-dispatch*`、只取 `args.file_path` | 兼容 `tool/ptc-dispatch*`；路径取 `file_path/filePath/path`、`files[].path`、`*path`；工具名覆盖 `ops_read_files/ops_inspect_local_file/ops_write_file/ops_edit_file/ops_grep/ops_glob` |
+| 依赖 | `import` 裸 `schemastery` | `@deepseek-ai/schemastery`（必须与宿主同一个 Schema 类；`dependencies` 置空，复用 profile 顶层 hoisted 的那份） |
+| 会话文件定位 | 每次全树扫描 | 直探 `<sessions>/<工作区>/<sessionId>/`，未命中再全树扫描；空结果不写缓存 |
 
 ## 许可
 
