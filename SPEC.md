@@ -150,7 +150,7 @@ package.json       "dsh": { "client": { "inject": [...ui...], "platform":"web" }
 - **Q2 上下文范围**：整段 transcript + 本会话全部触及文件。
 - **Q3 文件捕获粒度**：写/改/删可靠捕获（`tool/result` 的 `meta.diffs`）；读类工具 best-effort（能拿路径就拿，拿不到不强求）。
 - **Q4 UI 形态（2026-08-16 终版）**：独立零构建纯 JS 插件，上架插件市场，用户拉取放入 Cordis 插件目录即加载，非 companion 内置。
-  - **唤起入口**：左侧主栏底部 `sidebar.footer.action` 槽注册独立图标（list 槽，scope=root，在 settings 图标旁），用户手动点击才展开右侧自绘面板，**不自动展开**；不侵入、不改动主界面与 dsh-better-sidebar，二者并排共存。
+  - **唤起入口**：左侧主栏底部 `sidebar.footer.action` 槽注册独立图标（list 槽，scope=root），用户手动点击才展开右侧自绘面板，**不自动展开**；宽态下该槽按竖排渲染，与其他插件的入口各占一行，折叠态为圆钮。
   - **载体**：右侧自绘固定面板 + 可撕出独立浮窗（页内 position:fixed 可拖拽缩放）；浮窗一键收回侧栏；**全局单例 Store** 共享会话数据，切载体不丢消息/Agent 状态；浮窗状态仅存内存，DSH 重启/插件重载强制回落侧栏，不记忆浮窗状态。
   - **唤起命令**：主会话输入框斜杠命令 `/side-session`（`ctx.commandUi.register`，popupSelect，选项=唤起浮窗/侧栏/清空）+ 全局快捷键 Ctrl+Shift+S（document keydown 自监听，DSH 无全局命令面板）。
   - **输入框**：行为级复刻主界面 InputBar（InputBar 是内部组件不导出、className 哈希无法引用）——自绘 textarea + aria-hidden mirror div 自动增高 + 完整 IME 处理（composingRef + onCompositionStart/End + isComposing + keyCode 229，组合中不提交）+ 快捷键（Enter 提交/Shift+Enter 换行/Ctrl·Cmd+Z 撤销/Y·Shift+Z 重做）+ onCopy/onCut/onPaste + `--dsw-alias-*` token 复刻视觉。侧栏与浮窗输入框 UI/交互/auto-grow 完全一致；修复 webview 键盘输入阻塞。

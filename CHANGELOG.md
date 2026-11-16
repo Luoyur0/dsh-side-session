@@ -1,5 +1,11 @@
 # 变更记录
 
+## 0.3.2 — 2026-11-16
+
+**修复**
+
+- 侧栏 footer 入口与同槽插件（如 dsh-session-navigator）横向重叠：官方内核把 `sidebar.footer.action` 渲染成横排 flex 行，本插件按整行绘制的按钮（`flex:none` + `width:calc(100% + 8px)`）会撑满并压住前一项。宽态下把该槽容器标成竖排（`data-dss-footer-host`；宿主按 `[data-slot='sidebar.footer.action']` 契约定位，兜底取类名含 `footer` 的 flex row 容器），折叠态维持圆钮；按钮宽态样式收为 `width:100%; margin:4px 0`，避免列内横向溢出。
+
 ## 0.3.1 — 2026-11-15
 
 首个在 DSH 官方内核（0.2.2-rc.1）上验证可用的版本。上游 0.3.0 的功能全部保留。
